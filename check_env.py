@@ -4,6 +4,7 @@ Script to check if the required packages for the workshop are installed
 Author: Bargava Subramanian
 
 """
+
 import sys
 
 # requirements
@@ -27,13 +28,13 @@ has = dict(
 returns = 0
 
 # check installed packages
-for module in has.keys():
+for module in has:
     try:
         _module = module.split('-')[-1]
         __module__ = __import__(_module, globals(), locals(), [], 0)
-        exec('%s = __module__' % _module)
+        exec(f'{_module} = __module__')
     except ImportError:
-        print("%s:: %s" % (module, sys.exc_info()[1]))
+        print(f"{module}:: {sys.exc_info()[1]}")
         #run.pop(module, None)
         returns += 1
 
@@ -44,12 +45,10 @@ for module,version in has.items():
     try:
         _module = module.split('-')[-1]
         assert V(eval(_module).__version__) >= V(version)
-    except NameError:
+    except (NameError, AttributeError):
         pass # failed import
-    except AttributeError:
-        pass # can't version-check non-standard packages...
     except AssertionError:
-        print("%s:: Version >= %s is required" % (module, version))
+        print(f"{module}:: Version >= {version} is required")
         returns += 1
 
 #Check for image
